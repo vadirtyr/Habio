@@ -1,0 +1,113 @@
+{
+  "theme": "LIGHT",
+  "archetype": "6 (Vibrant Play)",
+  "vibe": "Playful, Gamified, Neo-Brutalist, Energetic, Tactile",
+  "description": "A gamified habit and task tracking application designed to make productivity feel like a playful, rewarding game. It uses neo-brutalist design patterns with soft pastel backgrounds, bold black outlines, chunky solid shadows, and vibrant accent colors to create a tactile 'bento box' experience. Badges, visual progress, and bright interactive elements are key.",
+  "colors": {
+    "background": {
+      "primary": "#FDFCFB",
+      "secondary": "#F3F0EA",
+      "card": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#1E1E24",
+      "secondary": "#5C5C68",
+      "inverse": "#FFFFFF",
+      "placeholder": "#9AA0A6"
+    },
+    "brand": {
+      "primary": "#EF476F",
+      "secondary": "#118AB2",
+      "accent": "#FFD166"
+    },
+    "status": {
+      "success": "#06D6A0",
+      "warning": "#FFD166",
+      "error": "#EF476F",
+      "info": "#118AB2",
+      "coin": "#FFD166"
+    },
+    "border": {
+      "default": "#1E1E24"
+    }
+  },
+  "typography": {
+    "font_families": {
+      "heading": "Outfit, sans-serif",
+      "body": "Nunito, sans-serif"
+    },
+    "scales": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-bold tracking-tight",
+      "h4": "text-lg sm:text-xl font-bold",
+      "body": "text-base font-medium leading-relaxed",
+      "small": "text-sm font-semibold",
+      "label": "text-xs font-bold uppercase tracking-[0.15em]"
+    }
+  },
+  "layout_and_spacing": {
+    "philosophy": "Generous Spacing, The Bento Grid, Solid Neobrutalism",
+    "dashboard_grid": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+    "bento_spans": {
+      "summary": "col-span-1",
+      "primary_data": "col-span-1 md:col-span-2 row-span-2",
+      "feed": "col-span-1 row-span-2"
+    },
+    "spacing_scale": {
+      "container": "p-6 md:p-8 lg:p-12",
+      "card": "p-6",
+      "item": "p-4"
+    }
+  },
+  "components": {
+    "cards": {
+      "style": "bg-white border-2 border-[#1E1E24] rounded-2xl shadow-[4px_4px_0px_0px_rgba(30,30,36,1)] overflow-hidden",
+      "hover": "hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(30,30,36,1)] transition-transform duration-200"
+    },
+    "buttons": {
+      "primary": "bg-[#EF476F] text-white border-2 border-[#1E1E24] rounded-xl shadow-[4px_4px_0px_0px_rgba(30,30,36,1)] font-bold px-6 py-3 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(30,30,36,1)] active:translate-y-1 active:shadow-[0px_0px_0px_0px_rgba(30,30,36,1)] transition-all",
+      "secondary": "bg-[#FFD166] text-[#1E1E24] border-2 border-[#1E1E24] rounded-xl shadow-[4px_4px_0px_0px_rgba(30,30,36,1)] font-bold px-6 py-3 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(30,30,36,1)] active:translate-y-1 active:shadow-[0px_0px_0px_0px_rgba(30,30,36,1)] transition-all",
+      "outline": "bg-white text-[#1E1E24] border-2 border-[#1E1E24] rounded-xl shadow-[4px_4px_0px_0px_rgba(30,30,36,1)] font-bold px-6 py-3 hover:bg-[#F3F0EA] transition-all"
+    },
+    "inputs": {
+      "style": "bg-white border-2 border-[#1E1E24] rounded-xl px-4 py-3 font-medium shadow-[2px_2px_0px_0px_rgba(30,30,36,1)] focus:outline-none focus:ring-4 focus:ring-[#118AB2]/30 focus:border-[#118AB2] transition-all"
+    },
+    "badges": {
+      "easy": "bg-[#06D6A0] text-[#1E1E24] border-2 border-[#1E1E24] rounded-full px-3 py-1 text-xs font-bold",
+      "medium": "bg-[#FFD166] text-[#1E1E24] border-2 border-[#1E1E24] rounded-full px-3 py-1 text-xs font-bold",
+      "hard": "bg-[#EF476F] text-white border-2 border-[#1E1E24] rounded-full px-3 py-1 text-xs font-bold",
+      "coin": "bg-[#FFD166] text-[#1E1E24] border-2 border-[#1E1E24] rounded-full px-3 py-1 text-sm font-black flex items-center gap-1 shadow-[2px_2px_0px_0px_rgba(30,30,36,1)]"
+    }
+  },
+  "interactions": {
+    "hover": "All interactive elements MUST have explicit hover states (color change + transform/shadow shift).",
+    "active": "Buttons MUST press down (remove shadow, translate-y down) to feel like physical arcade buttons.",
+    "focus": "Use high-contrast focus rings, e.g., focus:ring-4 focus:ring-[#118AB2]/50."
+  },
+  "media": {
+    "image_urls": {
+      "onboarding_hero": {
+        "url": "https://images.unsplash.com/photo-1751644332113-2004a1b143f1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwzfHwzZCUyMGNvbG9yZnVsJTIwYWJzdHJhY3QlMjBnZW9tZXRyaWMlMjBzaGFwZXN8ZW58MHx8fHwxNzc3NTc5MzU3fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Colorful 3D geometric shapes to use on the login/onboarding screen to set a playful tone."
+      },
+      "rewards_banner": {
+        "url": "https://images.unsplash.com/photo-1647221598398-934ed5cb0e4f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwxfHxjb2xvcmZ1bCUyMGdpZnQlMjBib3glMjBpc29sYXRlZHxlbnwwfHx8fDE3Nzc1NzkzNjd8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Colorful gift boxes to use in the Rewards Shop section as a header or empty state."
+      }
+    },
+    "icons_strategy": "lucide-react (Use default stroke width 2.5 or 3 for a bolder, cartoony look)"
+  },
+  "instructions_to_main_agent": [
+    "Apply the Neo-Brutalist Playful style to all UI elements: Use solid borders (border-2 border-black) and solid unblurred offset box-shadows (shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]).",
+    "Ensure all buttons have an active state that pushes them 'down' by removing the shadow and applying a translate-y equivalent to the shadow depth.",
+    "Use the Outfit font for headings (make them bold/black) and Nunito for body text.",
+    "Build a Bento Grid layout for the Dashboard. Include a 'Hero/Stats' card, a 'Today's Habits' list, and a 'Pending Tasks' list.",
+    "Use distinct colors for difficulty levels: Easy (#06D6A0), Medium (#FFD166), Hard (#EF476F).",
+    "Always display the user's Coin balance prominently in the top navigation with a gold coin icon (lucide-react 'Coins' or 'CircleDollarSign').",
+    "Add `data-testid` to all forms, inputs, buttons, and reward redemption actions.",
+    "Use Shadcn UI but heavily override its default styling to match the chunky, gamified aesthetic provided in the components section.",
+    "Create a visual difference between Habits (recurring, maybe use a flame icon for streaks) and Tasks (one-time, standard checkbox).",
+    "The UI should look like a fun modern game dashboard, not a generic SaaS tool."
+  ]
+}
