@@ -32,7 +32,7 @@ export default function Layout({ children }) {
             <div className="w-10 h-10 rounded-xl bg-[#EF476F] border-2 border-[#1E1E24] dark:border-[#FDFCFB] flex items-center justify-center" style={{ boxShadow: "3px 3px 0 0 currentColor" }}>
               <Sparkles className="w-5 h-5 text-white" strokeWidth={3} />
             </div>
-            <span className="font-heading font-black text-2xl tracking-tight">HabitQuest</span>
+            <span className="font-heading font-black text-2xl tracking-tight">Habio</span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">

@@ -1,4 +1,4 @@
-# HabitQuest — Product Requirements Document
+# Habio — Product Requirements Document
 
 ## Original Problem Statement
 "Please build me an app that allows you to track habits and tasks that rewards you with coins that can be traded for user defined rewards"
@@ -8,7 +8,7 @@
 - Habits = recurring (daily/weekly), Tasks = one-time to-dos
 - Coins earned: difficulty-based (Easy=5, Medium=10, Hard=20) OR custom amount
 - User-defined rewards with coin cost + redemption history log
-- Design vibe: Playful & gamified (Neo-brutalist "HabitQuest" theme)
+- Design vibe: Playful & gamified (Neo-brutalist "Habio" theme)
 
 ## User Personas
 - Self-improver: builds daily routines, needs streak motivation

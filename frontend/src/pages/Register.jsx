@@ -22,7 +22,7 @@ export default function Register() {
     const res = await register(email, password, name);
     setSubmitting(false);
     if (res.ok) {
-      toast.success("Account created! Welcome to HabitQuest.");
+      toast.success("Account created! Welcome to Habio.");
       navigate("/");
     } else {
       toast.error(res.error);
@@ -36,7 +36,7 @@ export default function Register() {
           <div className="w-12 h-12 rounded-2xl bg-[#EF476F] border-2 border-[#1E1E24] flex items-center justify-center" style={{ boxShadow: "4px 4px 0 0 #1E1E24" }}>
             <Sparkles className="w-6 h-6 text-white" strokeWidth={3} />
           </div>
-          <span className="font-heading font-black text-3xl">HabitQuest</span>
+          <span className="font-heading font-black text-3xl">Habio</span>
         </div>
 
         <div className="nb-card p-8">

@@ -1,4 +1,4 @@
-"""Backend API tests for Habit Quest."""
+"""Backend API tests for Habio."""
 import os
 import uuid
 import pytest

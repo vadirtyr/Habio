@@ -729,7 +729,7 @@ async def claim_quest(quest_id: str, user: dict = Depends(get_current_user)):
 # --- Health ---
 @api_router.get("/")
 async def root():
-    return {"message": "Habit Quest API", "status": "ok"}
+    return {"message": "Habio API", "status": "ok"}
 
 
 # --- Register router & CORS ---
