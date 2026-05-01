@@ -110,9 +110,11 @@ into one container — perfect for platforms that pull a single image:
 - Mongo is **not** included — point `MONGO_URL` at a managed instance (e.g. Atlas)
 
 ```bash
-# Local test
+# Local test (single command)
 docker build -t habio .
-docker run -p 8080:8080 \
+docker run -d \
+  --name habio \
+  -p 8080:8080 \
   -e MONGO_URL="mongodb+srv://..." \
   -e DB_NAME=habio \
   -e JWT_SECRET=$(openssl rand -hex 32) \
@@ -120,6 +122,14 @@ docker run -p 8080:8080 \
   -e ADMIN_PASSWORD=strongpass \
   habio
 
+open http://localhost:8080
+```
+
+Or run it with Mongo via compose (no external DB needed):
+
+```bash
+cp .env.example .env     # fill in JWT_SECRET, ADMIN_*
+docker compose -f docker-compose.single.yml up --build -d
 open http://localhost:8080
 ```
 

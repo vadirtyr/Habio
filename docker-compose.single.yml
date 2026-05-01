@@ -1,0 +1,38 @@
+# Single-image production-style compose.
+# Uses the root Dockerfile (one container with frontend + backend bundled)
+# and adds a local MongoDB for convenience.
+#
+# Usage:
+#   cp .env.example .env       # and fill in JWT_SECRET etc.
+#   docker compose -f docker-compose.single.yml up --build -d
+#   open http://localhost:8080
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: habio-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  habio:
+    build: .
+    container_name: habio
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    environment:
+      PORT: 8080
+      MONGO_URL: mongodb://mongodb:27017
+      DB_NAME: ${DB_NAME:-habio}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required - generate via: openssl rand -hex 32}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    ports:
+      - "8080:8080"
+
+volumes:
+  mongo_data:
