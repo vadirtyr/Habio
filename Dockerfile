@@ -31,14 +31,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     supervisor \
     gettext-base \
-    build-essential \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Backend dependencies
-COPY backend/requirements.txt /app/backend/requirements.txt
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+# Backend dependencies (slim production set — see requirements-prod.txt)
+COPY backend/requirements-prod.txt /app/backend/requirements-prod.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements-prod.txt
 
 # Backend source
 COPY backend/ /app/backend/
