@@ -20,7 +20,7 @@ export default function HabitCard({ habit, onComplete, onEdit, onDelete, onOpenD
             className="text-left w-full group"
             data-testid={`habit-open-detail-${id}`}
           >
-            <h3 className="font-heading font-extrabold text-xl truncate flex items-center gap-1.5 group-hover:text-[#EF476F] transition-colors" data-testid={`habit-name-${id}`}>
+            <h3 className="font-heading font-extrabold text-xl truncate flex items-center gap-1.5 group-hover:text-[#0EA5E9] transition-colors" data-testid={`habit-name-${id}`}>
               {name}
               <Maximize2 className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" strokeWidth={3} />
             </h3>
@@ -31,7 +31,7 @@ export default function HabitCard({ habit, onComplete, onEdit, onDelete, onOpenD
           <button onClick={() => onEdit(habit)} className="w-8 h-8 rounded-lg border-2 border-[#1E1E24] dark:border-[#FDFCFB] bg-white dark:bg-[#1F1F28] flex items-center justify-center hover:bg-[#F3F0EA] dark:hover:bg-[#2A2A33]" data-testid={`habit-edit-${id}`} aria-label="Edit habit">
             <Pencil className="w-3.5 h-3.5" strokeWidth={2.75} />
           </button>
-          <button onClick={() => onDelete(id)} className="w-8 h-8 rounded-lg border-2 border-[#1E1E24] dark:border-[#FDFCFB] bg-white dark:bg-[#1F1F28] flex items-center justify-center hover:bg-[#EF476F] hover:text-white" data-testid={`habit-delete-${id}`} aria-label="Delete habit">
+          <button onClick={() => onDelete(id)} className="w-8 h-8 rounded-lg border-2 border-[#1E1E24] dark:border-[#FDFCFB] bg-white dark:bg-[#1F1F28] flex items-center justify-center hover:bg-[#F43F5E] hover:text-white" data-testid={`habit-delete-${id}`} aria-label="Delete habit">
             <Trash2 className="w-3.5 h-3.5" strokeWidth={2.75} />
           </button>
         </div>
@@ -39,7 +39,7 @@ export default function HabitCard({ habit, onComplete, onEdit, onDelete, onOpenD
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <DifficultyBadge value={difficulty} testId={`habit-diff-${id}`} />
-        <span className="nb-badge bg-[#118AB2] text-white capitalize flex items-center gap-1">
+        <span className="nb-badge bg-[#3B82F6] text-white capitalize flex items-center gap-1">
           <Calendar className="w-3 h-3" strokeWidth={3} /> {frequency}
         </span>
         <span className="nb-badge-coin"><Coins className="w-3.5 h-3.5" strokeWidth={3} />{coins_per_completion}</span>
@@ -47,7 +47,7 @@ export default function HabitCard({ habit, onComplete, onEdit, onDelete, onOpenD
 
       <div className="grid grid-cols-2 gap-2 mb-4 text-center">
         <div className="p-2 rounded-lg border-2 border-[#1E1E24] dark:border-[#FDFCFB] bg-[#FDFCFB] dark:bg-[#1F1F28]">
-          <div className="flex items-center justify-center gap-1 text-[#EF476F] font-bold">
+          <div className="flex items-center justify-center gap-1 text-[#0EA5E9] font-bold">
             <Flame className="w-4 h-4" strokeWidth={3} />
             <span className="font-heading font-black text-xl" data-testid={`habit-streak-${id}`}>{streak}</span>
           </div>

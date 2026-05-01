@@ -29,7 +29,7 @@ export default function Layout({ children }) {
       <header className="sticky top-0 z-30 bg-[#FDFCFB]/95 dark:bg-[#14141A]/95 backdrop-blur border-b-2 border-[#1E1E24] dark:border-[#FDFCFB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2" data-testid="app-logo-link">
-            <div className="w-10 h-10 rounded-xl bg-[#EF476F] border-2 border-[#1E1E24] dark:border-[#FDFCFB] flex items-center justify-center" style={{ boxShadow: "3px 3px 0 0 currentColor" }}>
+            <div className="w-10 h-10 rounded-xl bg-[#0EA5E9] border-2 border-[#1E1E24] dark:border-[#FDFCFB] flex items-center justify-center" style={{ boxShadow: "3px 3px 0 0 currentColor" }}>
               <Sparkles className="w-5 h-5 text-white" strokeWidth={3} />
             </div>
             <span className="font-heading font-black text-2xl tracking-tight">Habio</span>

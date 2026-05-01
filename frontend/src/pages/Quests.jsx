@@ -30,7 +30,7 @@ function getButtonClass(quest) {
 function QuestCard({ quest, onClaim, claiming }) {
   const Icon = LucideIcons[quest.icon] || Sparkles;
   const periodLabel = quest.period === "daily" ? "DAILY" : "WEEKLY";
-  const periodCls = quest.period === "daily" ? "bg-[#FFD166] text-[#1E1E24]" : "bg-[#118AB2] text-white";
+  const periodCls = quest.period === "daily" ? "bg-[#FFD166] text-[#1E1E24]" : "bg-[#3B82F6] text-white";
 
   return (
     <div className="nb-card nb-card-hover p-5" data-testid={`quest-${quest.id}`}>

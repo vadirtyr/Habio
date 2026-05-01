@@ -22,7 +22,7 @@ function RedemptionRow({ item }) {
           <Calendar className="w-3 h-3" strokeWidth={3} /> {formatDate(item.redeemed_at)}
         </div>
       </div>
-      <div className="nb-badge bg-[#EF476F] text-white flex items-center gap-1">
+      <div className="nb-badge bg-[#F43F5E] text-white flex items-center gap-1">
         <Coins className="w-3.5 h-3.5" strokeWidth={3} />-{item.cost}
       </div>
     </div>
@@ -31,8 +31,8 @@ function RedemptionRow({ item }) {
 
 function TransactionRow({ tx }) {
   const isEarn = tx.amount > 0;
-  const iconCls = isEarn ? "bg-[#06D6A0]" : "bg-[#EF476F] text-white";
-  const badgeCls = isEarn ? "bg-[#06D6A0] text-[#1E1E24]" : "bg-[#EF476F] text-white";
+  const iconCls = isEarn ? "bg-[#06D6A0]" : "bg-[#F43F5E] text-white";
+  const badgeCls = isEarn ? "bg-[#06D6A0] text-[#1E1E24]" : "bg-[#F43F5E] text-white";
   const sign = isEarn ? "+" : "";
   return (
     <div className="nb-card p-4 flex items-center gap-4" data-testid={`tx-${tx.id}`}>
@@ -84,7 +84,7 @@ export default function History() {
 
   const renderRedemptions = () => {
     if (redemptions.length === 0) {
-      return <EmptyState icon={Gift} title="No redemptions yet" subtitle="Redeem a reward to see it here." color="text-[#EF476F]" />;
+      return <EmptyState icon={Gift} title="No redemptions yet" subtitle="Redeem a reward to see it here." color="text-[#0EA5E9]" />;
     }
     return (
       <div className="space-y-3" data-testid="redemptions-list">

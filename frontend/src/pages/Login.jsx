@@ -28,7 +28,7 @@ export default function Login() {
     <div className="min-h-screen auth-bg flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#EF476F] border-2 border-[#1E1E24] flex items-center justify-center" style={{ boxShadow: "4px 4px 0 0 #1E1E24" }}>
+          <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9] border-2 border-[#1E1E24] flex items-center justify-center" style={{ boxShadow: "4px 4px 0 0 #1E1E24" }}>
             <Sparkles className="w-6 h-6 text-white" strokeWidth={3} />
           </div>
           <span className="font-heading font-black text-3xl">Habio</span>
@@ -77,7 +77,7 @@ export default function Login() {
 
           <p className="text-sm text-center mt-5 text-[#5C5C68]">
             Don't have an account?{" "}
-            <Link to="/register" className="font-bold text-[#EF476F] underline underline-offset-2" data-testid="go-to-register-link">
+            <Link to="/register" className="font-bold text-[#0EA5E9] underline underline-offset-2" data-testid="go-to-register-link">
               Sign up
             </Link>
           </p>

@@ -48,7 +48,7 @@ function HabitItem({ habit, onComplete, popCoin }) {
       <DifficultyBadge value={difficulty} />
       <span className="nb-badge-coin !text-xs !px-2 !py-0.5"><Coins className="w-3 h-3" strokeWidth={3} />{coins_per_completion}</span>
       {popCoin?.id === id && (
-        <span className="absolute -top-2 right-3 font-heading font-black text-[#EF476F] text-lg animate-float-up">+{popCoin.amount}</span>
+        <span className="absolute -top-2 right-3 font-heading font-black text-[#0EA5E9] text-lg animate-float-up">+{popCoin.amount}</span>
       )}
     </li>
   );
@@ -71,7 +71,7 @@ function TaskItem({ task, onComplete, popCoin }) {
       <DifficultyBadge value={difficulty} />
       <span className="nb-badge-coin !text-xs !px-2 !py-0.5"><Coins className="w-3 h-3" strokeWidth={3} />{coins_reward}</span>
       {popCoin?.id === id && (
-        <span className="absolute -top-2 right-3 font-heading font-black text-[#EF476F] text-lg animate-float-up">+{popCoin.amount}</span>
+        <span className="absolute -top-2 right-3 font-heading font-black text-[#0EA5E9] text-lg animate-float-up">+{popCoin.amount}</span>
       )}
     </li>
   );
@@ -82,10 +82,10 @@ function HabitsCard({ habits, pendingCount, onComplete, popCoin }) {
     <div className="nb-card p-6" data-testid="today-habits-card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Flame className="w-5 h-5 text-[#EF476F]" strokeWidth={3} />
+          <Flame className="w-5 h-5 text-[#0EA5E9]" strokeWidth={3} />
           <h2 className="font-heading text-2xl font-extrabold">Today's Habits</h2>
         </div>
-        <Link to="/habits" className="text-sm font-bold text-[#118AB2] flex items-center gap-1">
+        <Link to="/habits" className="text-sm font-bold text-[#3B82F6] flex items-center gap-1">
           All <ArrowRight className="w-4 h-4" strokeWidth={2.75} />
         </Link>
       </div>
@@ -113,10 +113,10 @@ function TasksCard({ tasks, onComplete, popCoin }) {
     <div className="nb-card p-6" data-testid="pending-tasks-card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <ListChecks className="w-5 h-5 text-[#118AB2]" strokeWidth={3} />
+          <ListChecks className="w-5 h-5 text-[#3B82F6]" strokeWidth={3} />
           <h2 className="font-heading text-2xl font-extrabold">Pending Tasks</h2>
         </div>
-        <Link to="/tasks" className="text-sm font-bold text-[#118AB2] flex items-center gap-1">
+        <Link to="/tasks" className="text-sm font-bold text-[#3B82F6] flex items-center gap-1">
           All <ArrowRight className="w-4 h-4" strokeWidth={2.75} />
         </Link>
       </div>
@@ -136,7 +136,7 @@ function TasksCard({ tasks, onComplete, popCoin }) {
 
 function RewardsCTA() {
   return (
-    <div className="mt-8 nb-card p-6 bg-gradient-to-r from-[#FFD166] to-[#EF476F] text-white" data-testid="rewards-cta">
+    <div className="mt-8 nb-card p-6 bg-gradient-to-r from-[#FFD166] to-[#0EA5E9] text-white" data-testid="rewards-cta">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Gift className="w-8 h-8" strokeWidth={3} />
@@ -225,8 +225,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard label="Coin Balance" value={user?.coin_balance ?? 0} icon={Coins} bg="bg-[#FFD166]" testId="stat-balance" />
         <StatCard label="Total Earned" value={stats?.total_earned ?? 0} icon={TrendingUp} bg="bg-[#06D6A0]" testId="stat-earned" />
-        <StatCard label="Best Streak" value={stats?.best_streak ?? 0} icon={Flame} bg="bg-[#EF476F]" testId="stat-streak" />
-        <StatCard label="Tasks Done" value={stats?.tasks_done ?? 0} icon={Award} bg="bg-[#118AB2]" testId="stat-tasks-done" />
+        <StatCard label="Best Streak" value={stats?.best_streak ?? 0} icon={Flame} bg="bg-[#0EA5E9]" testId="stat-streak" />
+        <StatCard label="Tasks Done" value={stats?.tasks_done ?? 0} icon={Award} bg="bg-[#3B82F6]" testId="stat-tasks-done" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 
-const COLORS = ["#EF476F", "#FFD166", "#06D6A0", "#118AB2", "#FFFFFF"];
+const COLORS = ["#0EA5E9", "#FFD166", "#06D6A0", "#3B82F6", "#F43F5E", "#FFFFFF"];
 
 export function celebrate(intensity = "normal") {
   const counts = { small: 40, normal: 80, big: 160 };

@@ -11,7 +11,7 @@ import { toast } from "sonner";
 function EmptyHabits({ onCreate }) {
   return (
     <div className="nb-card p-10 text-center">
-      <Flame className="w-12 h-12 mx-auto text-[#EF476F]" strokeWidth={2.75} />
+      <Flame className="w-12 h-12 mx-auto text-[#0EA5E9]" strokeWidth={2.75} />
       <h3 className="font-heading text-2xl font-extrabold mt-3">No habits yet!</h3>
       <p className="text-[#5C5C68] mt-1 mb-4">Start by creating a habit you want to build.</p>
       <button onClick={onCreate} className="nb-btn nb-btn-primary" data-testid="empty-new-habit-btn">

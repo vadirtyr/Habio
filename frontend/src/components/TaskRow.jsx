@@ -53,7 +53,7 @@ export default function TaskRow({ task, onToggle, onEdit, onUncomplete, onDelete
 
       <div className="flex gap-1">
         <ActionButton task={task} onEdit={onEdit} onUncomplete={onUncomplete} />
-        <button onClick={() => onDelete(id)} className="w-9 h-9 rounded-lg border-2 border-[#1E1E24] bg-white flex items-center justify-center hover:bg-[#EF476F] hover:text-white" data-testid={`task-delete-${id}`} aria-label="Delete task">
+        <button onClick={() => onDelete(id)} className="w-9 h-9 rounded-lg border-2 border-[#1E1E24] bg-white flex items-center justify-center hover:bg-[#F43F5E] hover:text-white" data-testid={`task-delete-${id}`} aria-label="Delete task">
           <Trash2 className="w-4 h-4" strokeWidth={2.75} />
         </button>
       </div>

@@ -59,7 +59,7 @@ function RewardForm({ open, onClose, onSubmit, initial }) {
 function EmptyRewards({ onCreate }) {
   return (
     <div className="nb-card p-10 text-center">
-      <Gift className="w-12 h-12 mx-auto text-[#EF476F]" strokeWidth={2.75} />
+      <Gift className="w-12 h-12 mx-auto text-[#0EA5E9]" strokeWidth={2.75} />
       <h3 className="font-heading text-2xl font-extrabold mt-3">No rewards yet!</h3>
       <p className="text-[#5C5C68] mt-1 mb-4">Define rewards you want to buy with your hard-earned coins.</p>
       <button onClick={onCreate} className="nb-btn nb-btn-primary" data-testid="empty-new-reward-btn">

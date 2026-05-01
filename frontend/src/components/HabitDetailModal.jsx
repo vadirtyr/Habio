@@ -32,14 +32,14 @@ export default function HabitDetailModal({ habit, onClose }) {
 
         <div className="flex flex-wrap items-center gap-2 mb-5">
           <DifficultyBadge value={difficulty} />
-          <span className="nb-badge bg-[#118AB2] text-white capitalize flex items-center gap-1">
+          <span className="nb-badge bg-[#3B82F6] text-white capitalize flex items-center gap-1">
             <Calendar className="w-3 h-3" strokeWidth={3} /> {frequency}
           </span>
           <span className="nb-badge-coin"><Coins className="w-3.5 h-3.5" strokeWidth={3} />{coins_per_completion}</span>
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <StatTile icon={Flame} label="Current" value={streak || 0} color="text-[#EF476F]" />
+          <StatTile icon={Flame} label="Current" value={streak || 0} color="text-[#0EA5E9]" />
           <StatTile icon={Trophy} label="Best" value={longest_streak || 0} color="text-[#FFD166]" />
           <StatTile icon={Target} label="Total" value={total_completions || 0} color="text-[#06D6A0]" />
         </div>

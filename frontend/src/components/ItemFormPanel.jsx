@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const DIFFICULTIES = [
   { key: "easy", label: "Easy", coins: 5, cls: "bg-[#06D6A0] text-[#1E1E24]" },
   { key: "medium", label: "Medium", coins: 10, cls: "bg-[#FFD166] text-[#1E1E24]" },
-  { key: "hard", label: "Hard", coins: 20, cls: "bg-[#EF476F] text-white" },
+  { key: "hard", label: "Hard", coins: 20, cls: "bg-[#F43F5E] text-white" },
 ];
 
 function getTitle(initial, type) {
@@ -102,7 +102,7 @@ function CoinsField({ useCustom, setUseCustom, customCoins, setCustomCoins, diff
       <div className="flex items-center justify-between mb-1.5">
         <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68]">Difficulty</label>
         <label className="flex items-center gap-2 text-xs font-bold cursor-pointer">
-          <input type="checkbox" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} className="w-4 h-4 accent-[#EF476F]" data-testid={`${testIdPrefix}-custom-toggle`} />
+          <input type="checkbox" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} className="w-4 h-4 accent-[#0EA5E9]" data-testid={`${testIdPrefix}-custom-toggle`} />
           Custom amount
         </label>
       </div>
