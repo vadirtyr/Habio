@@ -13,6 +13,8 @@ import Tasks from "@/pages/Tasks";
 import Rewards from "@/pages/Rewards";
 import History from "@/pages/History";
 import Achievements from "@/pages/Achievements";
+import Quests from "@/pages/Quests";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const TOAST_OPTIONS = {
   style: {
@@ -43,22 +45,25 @@ function Shell({ children }) {
 function App() {
   return (
     <div className="App">
-      <AuthProvider>
-        <BrowserRouter>
-          <Toaster position="top-right" toastOptions={TOAST_OPTIONS} />
-          <Routes>
-            <Route path="/login" element={<AuthGate><Login /></AuthGate>} />
-            <Route path="/register" element={<AuthGate><Register /></AuthGate>} />
-            <Route path="/" element={<Shell><Dashboard /></Shell>} />
-            <Route path="/habits" element={<Shell><Habits /></Shell>} />
-            <Route path="/tasks" element={<Shell><Tasks /></Shell>} />
-            <Route path="/rewards" element={<Shell><Rewards /></Shell>} />
-            <Route path="/achievements" element={<Shell><Achievements /></Shell>} />
-            <Route path="/history" element={<Shell><History /></Shell>} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Toaster position="top-right" toastOptions={TOAST_OPTIONS} />
+            <Routes>
+              <Route path="/login" element={<AuthGate><Login /></AuthGate>} />
+              <Route path="/register" element={<AuthGate><Register /></AuthGate>} />
+              <Route path="/" element={<Shell><Dashboard /></Shell>} />
+              <Route path="/habits" element={<Shell><Habits /></Shell>} />
+              <Route path="/tasks" element={<Shell><Tasks /></Shell>} />
+              <Route path="/rewards" element={<Shell><Rewards /></Shell>} />
+              <Route path="/quests" element={<Shell><Quests /></Shell>} />
+              <Route path="/achievements" element={<Shell><Achievements /></Shell>} />
+              <Route path="/history" element={<Shell><History /></Shell>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
     </div>
   );
 }

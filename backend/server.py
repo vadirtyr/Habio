@@ -145,6 +145,7 @@ class TaskIn(BaseModel):
     difficulty: Optional[Literal["easy", "medium", "hard"]] = "medium"
     custom_coins: Optional[int] = None
     due_date: Optional[str] = None
+    recurrence: Optional[Literal["none", "daily", "weekly"]] = "none"
 
 
 class RewardIn(BaseModel):
@@ -327,6 +328,7 @@ async def create_task(body: TaskIn, user: dict = Depends(get_current_user)):
         "custom_coins": body.custom_coins,
         "coins_reward": coins_for(body.difficulty, body.custom_coins),
         "due_date": body.due_date,
+        "recurrence": body.recurrence or "none",
         "completed": False,
         "completed_at": None,
         "created_at": now_utc_iso(),
@@ -345,6 +347,7 @@ async def update_task(task_id: str, body: TaskIn, user: dict = Depends(get_curre
         "custom_coins": body.custom_coins,
         "coins_reward": coins_for(body.difficulty, body.custom_coins),
         "due_date": body.due_date,
+        "recurrence": body.recurrence or "none",
     }
     result = await db.tasks.update_one({"id": task_id, "user_id": user["id"]}, {"$set": update})
     if result.matched_count == 0:
@@ -375,7 +378,30 @@ async def complete_task(task_id: str, user: dict = Depends(get_current_user)):
     new_balance = user.get("coin_balance", 0) + coins
     await db.users.update_one({"id": user["id"]}, {"$set": {"coin_balance": new_balance}})
     await log_transaction(user["id"], coins, "earn", "task", task_id, f"Completed task: {task['name']}")
-    return {"coins_earned": coins, "new_balance": new_balance}
+
+    # Auto-recreate next occurrence if recurring
+    next_task_id = None
+    recurrence = task.get("recurrence", "none")
+    if recurrence in ("daily", "weekly"):
+        delta_days = 1 if recurrence == "daily" else 7
+        next_due = (datetime.now(timezone.utc).date() + timedelta(days=delta_days)).isoformat()
+        next_task_id = str(uuid.uuid4())
+        await db.tasks.insert_one({
+            "id": next_task_id,
+            "user_id": user["id"],
+            "name": task["name"],
+            "description": task.get("description", ""),
+            "difficulty": task.get("difficulty"),
+            "custom_coins": task.get("custom_coins"),
+            "coins_reward": task.get("coins_reward"),
+            "due_date": next_due,
+            "recurrence": recurrence,
+            "completed": False,
+            "completed_at": None,
+            "created_at": now_utc_iso(),
+        })
+
+    return {"coins_earned": coins, "new_balance": new_balance, "next_task_id": next_task_id}
 
 
 @api_router.post("/tasks/{task_id}/uncomplete")
@@ -559,21 +585,145 @@ async def compute_user_metrics(uid: str) -> dict:
 
 @api_router.get("/achievements")
 async def list_achievements(user: dict = Depends(get_current_user)):
-    metrics = await compute_user_metrics(user["id"])
+    uid = user["id"]
+    metrics = await compute_user_metrics(uid)
+    existing_docs = await db.user_achievements.find({"user_id": uid}, {"_id": 0}).to_list(100)
+    existing = {d["achievement_id"]: d for d in existing_docs}
+
     items = []
     for a in ACHIEVEMENT_DEFS:
         progress = int(metrics.get(a["metric"], 0))
         target = int(a["target"])
         earned = progress >= target
+        earned_at = None
+        newly_earned = False
+
+        if earned:
+            if a["id"] in existing:
+                earned_at = existing[a["id"]]["earned_at"]
+            else:
+                earned_at = now_utc_iso()
+                await db.user_achievements.insert_one({
+                    "user_id": uid,
+                    "achievement_id": a["id"],
+                    "earned_at": earned_at,
+                })
+                newly_earned = True
+
         items.append({
             **a,
             "progress": min(progress, target),
             "raw_progress": progress,
             "earned": earned,
+            "earned_at": earned_at,
+            "newly_earned": newly_earned,
             "percent": int(min(100, (progress / target) * 100)) if target else 0,
         })
     earned_count = sum(1 for x in items if x["earned"])
     return {"items": items, "earned_count": earned_count, "total": len(items)}
+
+
+# ============== Quests ==============
+QUEST_DEFS = [
+    {"id": "daily-3-habits",   "name": "Habit Hat-Trick",  "description": "Complete 3 habits today",        "icon": "Flame",  "period": "daily",  "target": 3,  "metric": "habits_today",      "reward": 25},
+    {"id": "daily-task",       "name": "Get One Done",     "description": "Complete any task today",       "icon": "Check",  "period": "daily",  "target": 1,  "metric": "tasks_today",       "reward": 15},
+    {"id": "weekly-10-habits", "name": "Habit Streaker",   "description": "Complete 10 habits this week",  "icon": "Zap",    "period": "weekly", "target": 10, "metric": "habits_this_week",  "reward": 50},
+    {"id": "weekly-3-tasks",   "name": "Task Master",      "description": "Complete 3 tasks this week",    "icon": "Award",  "period": "weekly", "target": 3,  "metric": "tasks_this_week",   "reward": 40},
+]
+
+
+def get_period_key(period: str) -> str:
+    today_dt = datetime.now(timezone.utc).date()
+    if period == "daily":
+        return today_dt.isoformat()
+    if period == "weekly":
+        iso = today_dt.isocalendar()
+        return f"{iso[0]}-W{iso[1]:02d}"
+    return ""
+
+
+def week_start_iso() -> str:
+    today_dt = datetime.now(timezone.utc).date()
+    monday = today_dt - timedelta(days=today_dt.weekday())
+    return monday.isoformat()
+
+
+async def compute_quest_metrics(uid: str) -> dict:
+    today = today_str()
+    monday = week_start_iso()
+
+    habits = await db.habits.find({"user_id": uid}, {"_id": 0, "completions": 1}).to_list(1000)
+    habits_today = sum(1 for h in habits if today in h.get("completions", []))
+    habits_this_week = sum(
+        1 for h in habits for d in h.get("completions", []) if d >= monday
+    )
+    tasks_today = await db.tasks.count_documents({
+        "user_id": uid, "completed": True,
+        "completed_at": {"$gte": today + "T00:00:00+00:00"},
+    })
+    tasks_this_week = await db.tasks.count_documents({
+        "user_id": uid, "completed": True,
+        "completed_at": {"$gte": monday + "T00:00:00+00:00"},
+    })
+    return {
+        "habits_today": habits_today,
+        "habits_this_week": habits_this_week,
+        "tasks_today": tasks_today,
+        "tasks_this_week": tasks_this_week,
+    }
+
+
+@api_router.get("/quests")
+async def list_quests(user: dict = Depends(get_current_user)):
+    uid = user["id"]
+    metrics = await compute_quest_metrics(uid)
+    claims_docs = await db.quest_claims.find({"user_id": uid}, {"_id": 0}).to_list(200)
+    claims = {(c["quest_id"], c["period_key"]) for c in claims_docs}
+
+    items = []
+    for q in QUEST_DEFS:
+        progress = int(metrics.get(q["metric"], 0))
+        target = int(q["target"])
+        period_key = get_period_key(q["period"])
+        completed = progress >= target
+        claimed = (q["id"], period_key) in claims
+        items.append({
+            **q,
+            "period_key": period_key,
+            "progress": min(progress, target),
+            "raw_progress": progress,
+            "percent": int(min(100, (progress / target) * 100)) if target else 0,
+            "completed": completed,
+            "claimed": claimed,
+            "claimable": completed and not claimed,
+        })
+    return {"items": items}
+
+
+@api_router.post("/quests/{quest_id}/claim")
+async def claim_quest(quest_id: str, user: dict = Depends(get_current_user)):
+    quest = next((q for q in QUEST_DEFS if q["id"] == quest_id), None)
+    if not quest:
+        raise HTTPException(status_code=404, detail="Quest not found")
+    uid = user["id"]
+    period_key = get_period_key(quest["period"])
+    already = await db.quest_claims.find_one({"user_id": uid, "quest_id": quest_id, "period_key": period_key})
+    if already:
+        raise HTTPException(status_code=400, detail="Already claimed for this period")
+
+    metrics = await compute_quest_metrics(uid)
+    progress = int(metrics.get(quest["metric"], 0))
+    if progress < int(quest["target"]):
+        raise HTTPException(status_code=400, detail="Quest not completed yet")
+
+    reward = int(quest["reward"])
+    new_balance = user.get("coin_balance", 0) + reward
+    await db.users.update_one({"id": uid}, {"$set": {"coin_balance": new_balance}})
+    await db.quest_claims.insert_one({
+        "user_id": uid, "quest_id": quest_id, "period_key": period_key, "claimed_at": now_utc_iso(),
+    })
+    await log_transaction(uid, reward, "earn", "quest", quest_id, f"Quest reward: {quest['name']}")
+    return {"coins_earned": reward, "new_balance": new_balance, "quest_id": quest_id}
 
 
 # --- Health ---
@@ -605,6 +755,8 @@ async def on_startup():
     await db.rewards.create_index("user_id")
     await db.redemptions.create_index("user_id")
     await db.transactions.create_index("user_id")
+    await db.user_achievements.create_index([("user_id", 1), ("achievement_id", 1)], unique=True)
+    await db.quest_claims.create_index([("user_id", 1), ("quest_id", 1), ("period_key", 1)], unique=True)
 
     # Seed admin
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com").lower()

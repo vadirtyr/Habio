@@ -27,7 +27,7 @@ function getSubmitLabel(submitting, initial) {
 function FrequencyPicker({ frequency, setFrequency, testIdPrefix }) {
   return (
     <div>
-      <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] mb-1.5 block">Frequency</label>
+      <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] dark:text-[#9AA0A6] mb-1.5 block">Frequency</label>
       <div className="grid grid-cols-2 gap-2">
         {["daily", "weekly"].map((f) => (
           <button
@@ -41,6 +41,35 @@ function FrequencyPicker({ frequency, setFrequency, testIdPrefix }) {
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+function RecurrencePicker({ recurrence, setRecurrence, testIdPrefix }) {
+  const opts = [
+    { k: "none", label: "None" },
+    { k: "daily", label: "Daily" },
+    { k: "weekly", label: "Weekly" },
+  ];
+  return (
+    <div>
+      <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] dark:text-[#9AA0A6] mb-1.5 block">Repeat</label>
+      <div className="grid grid-cols-3 gap-2">
+        {opts.map((o) => (
+          <button
+            key={o.k}
+            type="button"
+            onClick={() => setRecurrence(o.k)}
+            className={`nb-btn ${recurrence === o.k ? "nb-btn-info" : "nb-btn-outline"}`}
+            data-testid={`${testIdPrefix}-recur-${o.k}`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-[#5C5C68] dark:text-[#9AA0A6] mt-1.5">
+        Recurring tasks auto-create a new copy when completed.
+      </p>
     </div>
   );
 }
@@ -99,6 +128,7 @@ export default function ItemFormPanel({ open, onClose, onSubmit, initial, type, 
   const [description, setDescription] = useState(initial?.description || "");
   const [frequency, setFrequency] = useState(initial?.frequency || "daily");
   const [difficulty, setDifficulty] = useState(initial?.difficulty || "medium");
+  const [recurrence, setRecurrence] = useState(initial?.recurrence || "none");
   const [useCustom, setUseCustom] = useState(!!initial?.custom_coins);
   const [customCoins, setCustomCoins] = useState(initial?.custom_coins || 10);
   const [submitting, setSubmitting] = useState(false);
@@ -116,28 +146,33 @@ export default function ItemFormPanel({ open, onClose, onSubmit, initial, type, 
       custom_coins: useCustom ? Number(customCoins) : null,
     };
     if (type === "habit") payload.frequency = frequency;
+    if (type === "task") payload.recurrence = recurrence;
     await onSubmit(payload);
     setSubmitting(false);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1E1E24]/40" onClick={onClose} data-testid={`${testIdPrefix}-backdrop`}>
-      <div onClick={(e) => e.stopPropagation()} className="nb-card bg-white max-w-lg w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto" data-testid={`${testIdPrefix}-panel`}>
+      <div onClick={(e) => e.stopPropagation()} className="nb-card max-w-lg w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto" data-testid={`${testIdPrefix}-panel`}>
         <h2 className="font-heading font-black text-2xl sm:text-3xl mb-1">{getTitle(initial, type)}</h2>
-        <p className="text-[#5C5C68] text-sm mb-5">{getSubtitle(type)}</p>
+        <p className="text-[#5C5C68] dark:text-[#9AA0A6] text-sm mb-5">{getSubtitle(type)}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] mb-1.5 block">Name</label>
+            <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] dark:text-[#9AA0A6] mb-1.5 block">Name</label>
             <input autoFocus required value={name} onChange={(e) => setName(e.target.value)} className="nb-input" placeholder="e.g. Morning workout" data-testid={`${testIdPrefix}-name-input`} />
           </div>
           <div>
-            <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] mb-1.5 block">Description (optional)</label>
+            <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] dark:text-[#9AA0A6] mb-1.5 block">Description (optional)</label>
             <input value={description} onChange={(e) => setDescription(e.target.value)} className="nb-input" placeholder="Short notes..." data-testid={`${testIdPrefix}-desc-input`} />
           </div>
 
           {type === "habit" && (
             <FrequencyPicker frequency={frequency} setFrequency={setFrequency} testIdPrefix={testIdPrefix} />
+          )}
+
+          {type === "task" && (
+            <RecurrencePicker recurrence={recurrence} setRecurrence={setRecurrence} testIdPrefix={testIdPrefix} />
           )}
 
           <CoinsField
@@ -149,7 +184,6 @@ export default function ItemFormPanel({ open, onClose, onSubmit, initial, type, 
             setDifficulty={setDifficulty}
             testIdPrefix={testIdPrefix}
           />
-
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="nb-btn nb-btn-outline flex-1" data-testid={`${testIdPrefix}-cancel-btn`}>Cancel</button>
             <button type="submit" disabled={submitting} className="nb-btn nb-btn-primary flex-1" data-testid={`${testIdPrefix}-submit-btn`}>

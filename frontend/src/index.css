@@ -44,6 +44,27 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         --ring: 196 82% 39%;
         --radius: 0.75rem;
     }
+    .dark {
+        --background: 240 14% 9%;
+        --foreground: 38 29% 95%;
+        --card: 240 12% 14%;
+        --card-foreground: 38 29% 95%;
+        --popover: 240 12% 14%;
+        --popover-foreground: 38 29% 95%;
+        --primary: 345 85% 61%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 43 100% 70%;
+        --secondary-foreground: 240 9% 13%;
+        --muted: 240 8% 20%;
+        --muted-foreground: 38 10% 65%;
+        --accent: 196 82% 50%;
+        --accent-foreground: 0 0% 100%;
+        --destructive: 345 85% 61%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 38 29% 95%;
+        --input: 38 29% 95%;
+        --ring: 196 82% 50%;
+    }
 }
 
 @layer base {
@@ -56,6 +77,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         @apply bg-white border-2 border-[#1E1E24] rounded-2xl overflow-hidden;
         box-shadow: 4px 4px 0 0 #1E1E24;
     }
+    .dark .nb-card {
+        @apply bg-[#1F1F28] border-[#FDFCFB];
+        box-shadow: 4px 4px 0 0 #FFD166;
+    }
     .nb-card-hover {
         transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
@@ -63,14 +88,24 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         transform: translate(-2px, -2px);
         box-shadow: 6px 6px 0 0 #1E1E24;
     }
+    .dark .nb-card-hover:hover {
+        box-shadow: 6px 6px 0 0 #FFD166;
+    }
     .nb-btn {
         @apply inline-flex items-center justify-center gap-2 font-bold border-2 border-[#1E1E24] rounded-xl px-5 py-3 text-sm;
         box-shadow: 4px 4px 0 0 #1E1E24;
         transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
+    .dark .nb-btn {
+        @apply border-[#FDFCFB];
+        box-shadow: 4px 4px 0 0 #FFD166;
+    }
     .nb-btn:hover:not(:disabled) {
         transform: translate(-2px, -2px);
         box-shadow: 6px 6px 0 0 #1E1E24;
+    }
+    .dark .nb-btn:hover:not(:disabled) {
+        box-shadow: 6px 6px 0 0 #FFD166;
     }
     .nb-btn:active:not(:disabled) {
         transform: translate(2px, 2px);
@@ -86,11 +121,17 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     .nb-btn-info { @apply bg-[#118AB2] text-white; }
     .nb-btn-outline { @apply bg-white text-[#1E1E24]; }
     .nb-btn-outline:hover { @apply bg-[#F3F0EA]; }
+    .dark .nb-btn-outline { @apply bg-[#1F1F28] text-[#F3F0EA]; }
+    .dark .nb-btn-outline:hover { @apply bg-[#2A2A33]; }
 
     .nb-input {
         @apply w-full bg-white border-2 border-[#1E1E24] rounded-xl px-4 py-3 font-medium text-[#1E1E24];
         box-shadow: 2px 2px 0 0 #1E1E24;
         transition: all 0.15s ease;
+    }
+    .dark .nb-input {
+        @apply bg-[#1F1F28] border-[#FDFCFB] text-[#F3F0EA];
+        box-shadow: 2px 2px 0 0 #FFD166;
     }
     .nb-input::placeholder { color: #9AA0A6; }
     .nb-input:focus {
@@ -98,14 +139,20 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         box-shadow: 4px 4px 0 0 #118AB2;
         border-color: #118AB2;
     }
+    .dark .nb-input:focus {
+        box-shadow: 4px 4px 0 0 #06D6A0;
+        border-color: #06D6A0;
+    }
 
     .nb-badge {
         @apply inline-flex items-center gap-1 border-2 border-[#1E1E24] rounded-full px-3 py-1 text-xs font-bold;
     }
+    .dark .nb-badge { @apply border-[#FDFCFB]; }
     .nb-badge-coin {
         @apply inline-flex items-center gap-1 bg-[#FFD166] text-[#1E1E24] border-2 border-[#1E1E24] rounded-full px-3 py-1 text-sm font-black;
         box-shadow: 2px 2px 0 0 #1E1E24;
     }
+    .dark .nb-badge-coin { @apply border-[#FDFCFB]; box-shadow: 2px 2px 0 0 #FDFCFB; }
 }
 
 @keyframes pop {

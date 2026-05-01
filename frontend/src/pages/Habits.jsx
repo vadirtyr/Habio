@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { celebrate } from "@/lib/confetti";
 import HabitCard from "@/components/HabitCard";
+import HabitDetailModal from "@/components/HabitDetailModal";
 import ItemFormPanel from "@/components/ItemFormPanel";
 import { Flame, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ export default function Habits() {
   const [loading, setLoading] = useState(true);
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [detail, setDetail] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -89,7 +91,7 @@ export default function Habits() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {habits.map((h) => (
-          <HabitCard key={h.id} habit={h} onComplete={complete} onEdit={openEdit} onDelete={remove} />
+          <HabitCard key={h.id} habit={h} onComplete={complete} onEdit={openEdit} onDelete={remove} onOpenDetail={setDetail} />
         ))}
       </div>
     );
@@ -117,6 +119,8 @@ export default function Habits() {
         type="habit"
         testIdPrefix="habit-form"
       />
+
+      <HabitDetailModal habit={detail} onClose={() => setDetail(null)} />
     </div>
   );
 }
