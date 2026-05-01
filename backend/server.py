@@ -64,7 +64,7 @@ def today_str() -> str:
 
 
 def coins_for(difficulty: Optional[str], custom_coins: Optional[int]) -> int:
-    if custom_coins is not None and custom_coins > 0:
+    if custom_coins is not None and int(custom_coins) > 0:
         return int(custom_coins)
     if difficulty and difficulty.lower() in DIFFICULTY_COINS:
         return DIFFICULTY_COINS[difficulty.lower()]
@@ -274,12 +274,11 @@ async def complete_habit(habit_id: str, user: dict = Depends(get_current_user)):
     # streak calc
     last = habit.get("last_completed_date")
     yesterday = (datetime.now(timezone.utc).date() - timedelta(days=1)).isoformat()
+    new_streak = 1
     if last == yesterday:
         new_streak = habit.get("streak", 0) + 1
     elif last == today:
         new_streak = habit.get("streak", 0)
-    else:
-        new_streak = 1
     longest = max(habit.get("longest_streak", 0), new_streak)
 
     coins = habit.get("coins_per_completion") or coins_for(habit.get("difficulty"), habit.get("custom_coins"))
@@ -310,7 +309,8 @@ async def complete_habit(habit_id: str, user: dict = Depends(get_current_user)):
 @api_router.get("/tasks")
 async def list_tasks(user: dict = Depends(get_current_user)):
     items = await db.tasks.find({"user_id": user["id"]}, {"_id": 0}).to_list(1000)
-    items.sort(key=lambda x: (x.get("completed", False), -1 * (0 if x.get("created_at") is None else 1)))
+    # Pending first, then by created_at desc
+    items.sort(key=lambda x: (x.get("completed", False), x.get("created_at", "")), reverse=False)
     items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     items.sort(key=lambda x: x.get("completed", False))
     return items

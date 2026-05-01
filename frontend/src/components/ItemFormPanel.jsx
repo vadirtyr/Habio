@@ -6,10 +6,94 @@ const DIFFICULTIES = [
   { key: "hard", label: "Hard", coins: 20, cls: "bg-[#EF476F] text-white" },
 ];
 
-/**
- * Inline form for creating/editing habits and tasks.
- * Supports difficulty OR custom coin amount.
- */
+function getTitle(initial, type) {
+  const action = initial ? "Edit" : "New";
+  if (type === "habit") return `${action} Habit`;
+  if (type === "task") return `${action} Task`;
+  return `${action} Reward`;
+}
+
+function getSubtitle(type) {
+  if (type === "habit") return "Recurring daily or weekly — build your streak!";
+  if (type === "task") return "One-time to-do. Complete it, earn coins.";
+  return "";
+}
+
+function getSubmitLabel(submitting, initial) {
+  if (submitting) return "Saving...";
+  return initial ? "Save" : "Create";
+}
+
+function FrequencyPicker({ frequency, setFrequency, testIdPrefix }) {
+  return (
+    <div>
+      <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] mb-1.5 block">Frequency</label>
+      <div className="grid grid-cols-2 gap-2">
+        {["daily", "weekly"].map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => setFrequency(f)}
+            className={`nb-btn capitalize ${frequency === f ? "nb-btn-info" : "nb-btn-outline"}`}
+            data-testid={`${testIdPrefix}-freq-${f}`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DifficultyPicker({ difficulty, setDifficulty, testIdPrefix }) {
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {DIFFICULTIES.map((d) => {
+        const cls = difficulty === d.key ? d.cls : "nb-btn-outline";
+        return (
+          <button
+            key={d.key}
+            type="button"
+            onClick={() => setDifficulty(d.key)}
+            className={`nb-btn flex-col !py-3 ${cls}`}
+            data-testid={`${testIdPrefix}-diff-${d.key}`}
+          >
+            <span>{d.label}</span>
+            <span className="text-xs opacity-80">+{d.coins}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function CoinsField({ useCustom, setUseCustom, customCoins, setCustomCoins, difficulty, setDifficulty, testIdPrefix }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68]">Difficulty</label>
+        <label className="flex items-center gap-2 text-xs font-bold cursor-pointer">
+          <input type="checkbox" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} className="w-4 h-4 accent-[#EF476F]" data-testid={`${testIdPrefix}-custom-toggle`} />
+          Custom amount
+        </label>
+      </div>
+      {useCustom ? (
+        <input
+          type="number"
+          min="1"
+          value={customCoins}
+          onChange={(e) => setCustomCoins(e.target.value)}
+          className="nb-input"
+          placeholder="Coins"
+          data-testid={`${testIdPrefix}-custom-coins-input`}
+        />
+      ) : (
+        <DifficultyPicker difficulty={difficulty} setDifficulty={setDifficulty} testIdPrefix={testIdPrefix} />
+      )}
+    </div>
+  );
+}
+
 export default function ItemFormPanel({ open, onClose, onSubmit, initial, type, testIdPrefix = "form" }) {
   const [name, setName] = useState(initial?.name || "");
   const [description, setDescription] = useState(initial?.description || "");
@@ -39,12 +123,8 @@ export default function ItemFormPanel({ open, onClose, onSubmit, initial, type, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1E1E24]/40" onClick={onClose} data-testid={`${testIdPrefix}-backdrop`}>
       <div onClick={(e) => e.stopPropagation()} className="nb-card bg-white max-w-lg w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto" data-testid={`${testIdPrefix}-panel`}>
-        <h2 className="font-heading font-black text-2xl sm:text-3xl mb-1">
-          {initial ? "Edit" : "New"} {type === "habit" ? "Habit" : type === "task" ? "Task" : "Reward"}
-        </h2>
-        <p className="text-[#5C5C68] text-sm mb-5">
-          {type === "habit" ? "Recurring daily or weekly — build your streak!" : type === "task" ? "One-time to-do. Complete it, earn coins." : ""}
-        </p>
+        <h2 className="font-heading font-black text-2xl sm:text-3xl mb-1">{getTitle(initial, type)}</h2>
+        <p className="text-[#5C5C68] text-sm mb-5">{getSubtitle(type)}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -57,64 +137,23 @@ export default function ItemFormPanel({ open, onClose, onSubmit, initial, type, 
           </div>
 
           {type === "habit" && (
-            <div>
-              <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68] mb-1.5 block">Frequency</label>
-              <div className="grid grid-cols-2 gap-2">
-                {["daily", "weekly"].map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setFrequency(f)}
-                    className={`nb-btn capitalize ${frequency === f ? "nb-btn-info" : "nb-btn-outline"}`}
-                    data-testid={`${testIdPrefix}-freq-${f}`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <FrequencyPicker frequency={frequency} setFrequency={setFrequency} testIdPrefix={testIdPrefix} />
           )}
 
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#5C5C68]">Difficulty</label>
-              <label className="flex items-center gap-2 text-xs font-bold cursor-pointer">
-                <input type="checkbox" checked={useCustom} onChange={(e) => setUseCustom(e.target.checked)} className="w-4 h-4 accent-[#EF476F]" data-testid={`${testIdPrefix}-custom-toggle`} />
-                Custom amount
-              </label>
-            </div>
-            {!useCustom ? (
-              <div className="grid grid-cols-3 gap-2">
-                {DIFFICULTIES.map((d) => (
-                  <button
-                    key={d.key}
-                    type="button"
-                    onClick={() => setDifficulty(d.key)}
-                    className={`nb-btn flex-col !py-3 ${difficulty === d.key ? d.cls : "nb-btn-outline"}`}
-                    data-testid={`${testIdPrefix}-diff-${d.key}`}
-                  >
-                    <span>{d.label}</span>
-                    <span className="text-xs opacity-80">+{d.coins}</span>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <input
-                type="number"
-                min="1"
-                value={customCoins}
-                onChange={(e) => setCustomCoins(e.target.value)}
-                className="nb-input"
-                placeholder="Coins"
-                data-testid={`${testIdPrefix}-custom-coins-input`}
-              />
-            )}
-          </div>
+          <CoinsField
+            useCustom={useCustom}
+            setUseCustom={setUseCustom}
+            customCoins={customCoins}
+            setCustomCoins={setCustomCoins}
+            difficulty={difficulty}
+            setDifficulty={setDifficulty}
+            testIdPrefix={testIdPrefix}
+          />
 
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="nb-btn nb-btn-outline flex-1" data-testid={`${testIdPrefix}-cancel-btn`}>Cancel</button>
             <button type="submit" disabled={submitting} className="nb-btn nb-btn-primary flex-1" data-testid={`${testIdPrefix}-submit-btn`}>
-              {submitting ? "Saving..." : initial ? "Save" : "Create"}
+              {getSubmitLabel(submitting, initial)}
             </button>
           </div>
         </form>

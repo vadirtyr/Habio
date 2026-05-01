@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { Coins, Gift, Plus, Pencil, Trash2, ShoppingBag } from "lucide-react";
+import RewardCard from "@/components/RewardCard";
+import { Coins, Gift, Plus, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 function RewardForm({ open, onClose, onSubmit, initial }) {
@@ -9,7 +10,13 @@ function RewardForm({ open, onClose, onSubmit, initial }) {
   const [description, setDescription] = useState(initial?.description || "");
   const [cost, setCost] = useState(initial?.cost || 50);
   const [submitting, setSubmitting] = useState(false);
+
   if (!open) return null;
+
+  const submitLabel = (() => {
+    if (submitting) return "Saving...";
+    return initial ? "Save" : "Create";
+  })();
 
   const submit = async (e) => {
     e.preventDefault();
@@ -39,10 +46,40 @@ function RewardForm({ open, onClose, onSubmit, initial }) {
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="nb-btn nb-btn-outline flex-1" data-testid="reward-cancel-btn">Cancel</button>
             <button type="submit" disabled={submitting} className="nb-btn nb-btn-primary flex-1" data-testid="reward-submit-btn">
-              {submitting ? "Saving..." : initial ? "Save" : "Create"}
+              {submitLabel}
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function EmptyRewards({ onCreate }) {
+  return (
+    <div className="nb-card p-10 text-center">
+      <Gift className="w-12 h-12 mx-auto text-[#EF476F]" strokeWidth={2.75} />
+      <h3 className="font-heading text-2xl font-extrabold mt-3">No rewards yet!</h3>
+      <p className="text-[#5C5C68] mt-1 mb-4">Define rewards you want to buy with your hard-earned coins.</p>
+      <button onClick={onCreate} className="nb-btn nb-btn-primary" data-testid="empty-new-reward-btn">
+        <Plus className="w-4 h-4" strokeWidth={3} /> Create a reward
+      </button>
+    </div>
+  );
+}
+
+function WalletBanner({ balance }) {
+  return (
+    <div className="nb-card p-5 mb-6 bg-[#FFD166] flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <ShoppingBag className="w-6 h-6" strokeWidth={3} />
+        <div>
+          <div className="font-heading font-black text-xl">Your wallet</div>
+          <div className="text-sm font-semibold">Spend coins on custom rewards you define.</div>
+        </div>
+      </div>
+      <div className="nb-badge-coin !text-lg !px-4 !py-2" data-testid="rewards-balance">
+        <Coins className="w-5 h-5" strokeWidth={3} />{balance}
       </div>
     </div>
   );
@@ -55,21 +92,28 @@ export default function Rewards() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
-    const { data } = await api.get("/rewards");
-    setRewards(data);
-    setLoading(false);
-  };
+    try {
+      const { data } = await api.get("/rewards");
+      setRewards(data);
+    } catch (e) {
+      console.error("Failed to load rewards", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const closePanel = () => { setPanelOpen(false); setEditing(null); };
 
   const create = async (payload) => {
-    try { await api.post("/rewards", payload); toast.success("Reward created!"); setPanelOpen(false); load(); }
+    try { await api.post("/rewards", payload); toast.success("Reward created!"); closePanel(); load(); }
     catch (e) { toast.error(e.response?.data?.detail || "Failed"); }
   };
   const update = async (payload) => {
-    try { await api.put(`/rewards/${editing.id}`, payload); toast.success("Reward updated!"); setPanelOpen(false); setEditing(null); load(); }
+    try { await api.put(`/rewards/${editing.id}`, payload); toast.success("Reward updated!"); closePanel(); load(); }
     catch (e) { toast.error(e.response?.data?.detail || "Failed"); }
   };
   const remove = async (id) => {
@@ -77,7 +121,6 @@ export default function Rewards() {
     try { await api.delete(`/rewards/${id}`); toast.success("Deleted"); load(); }
     catch { toast.error("Failed"); }
   };
-
   const redeem = async (id) => {
     try {
       const { data } = await api.post(`/rewards/${id}/redeem`);
@@ -87,7 +130,22 @@ export default function Rewards() {
     } catch (e) { toast.error(e.response?.data?.detail || "Failed"); }
   };
 
+  const openCreate = () => { setEditing(null); setPanelOpen(true); };
+  const openEdit = (r) => { setEditing(r); setPanelOpen(true); };
+
   const balance = user?.coin_balance ?? 0;
+
+  const renderContent = () => {
+    if (loading) return <div className="text-center py-16 text-[#5C5C68] font-bold">Loading...</div>;
+    if (rewards.length === 0) return <EmptyRewards onCreate={openCreate} />;
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {rewards.map((r) => (
+          <RewardCard key={r.id} reward={r} balance={balance} onEdit={openEdit} onDelete={remove} onRedeem={redeem} />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div data-testid="rewards-page">
@@ -96,75 +154,17 @@ export default function Rewards() {
           <p className="text-sm font-bold uppercase tracking-[0.15em] text-[#5C5C68]">Rewards shop</p>
           <h1 className="font-heading text-4xl sm:text-5xl font-black tracking-tighter">Treat yourself</h1>
         </div>
-        <button onClick={() => { setEditing(null); setPanelOpen(true); }} className="nb-btn nb-btn-primary" data-testid="new-reward-btn">
+        <button onClick={openCreate} className="nb-btn nb-btn-primary" data-testid="new-reward-btn">
           <Plus className="w-4 h-4" strokeWidth={3} /> New Reward
         </button>
       </div>
 
-      <div className="nb-card p-5 mb-6 bg-[#FFD166] flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <ShoppingBag className="w-6 h-6" strokeWidth={3} />
-          <div>
-            <div className="font-heading font-black text-xl">Your wallet</div>
-            <div className="text-sm font-semibold">Spend coins on custom rewards you define.</div>
-          </div>
-        </div>
-        <div className="nb-badge-coin !text-lg !px-4 !py-2" data-testid="rewards-balance"><Coins className="w-5 h-5" strokeWidth={3} />{balance}</div>
-      </div>
-
-      {loading ? (
-        <div className="text-center py-16 text-[#5C5C68] font-bold">Loading...</div>
-      ) : rewards.length === 0 ? (
-        <div className="nb-card p-10 text-center">
-          <Gift className="w-12 h-12 mx-auto text-[#EF476F]" strokeWidth={2.75} />
-          <h3 className="font-heading text-2xl font-extrabold mt-3">No rewards yet!</h3>
-          <p className="text-[#5C5C68] mt-1 mb-4">Define rewards you want to buy with your hard-earned coins.</p>
-          <button onClick={() => setPanelOpen(true)} className="nb-btn nb-btn-primary" data-testid="empty-new-reward-btn">
-            <Plus className="w-4 h-4" strokeWidth={3} /> Create a reward
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {rewards.map((r) => {
-            const afford = balance >= r.cost;
-            return (
-              <div key={r.id} className="nb-card nb-card-hover p-5 flex flex-col" data-testid={`reward-card-${r.id}`}>
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#EF476F] border-2 border-[#1E1E24] flex items-center justify-center" style={{ boxShadow: "2px 2px 0 0 #1E1E24" }}>
-                    <Gift className="w-6 h-6 text-white" strokeWidth={3} />
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => { setEditing(r); setPanelOpen(true); }} className="w-8 h-8 rounded-lg border-2 border-[#1E1E24] bg-white flex items-center justify-center hover:bg-[#F3F0EA]" data-testid={`reward-edit-${r.id}`}>
-                      <Pencil className="w-3.5 h-3.5" strokeWidth={2.75} />
-                    </button>
-                    <button onClick={() => remove(r.id)} className="w-8 h-8 rounded-lg border-2 border-[#1E1E24] bg-white flex items-center justify-center hover:bg-[#EF476F] hover:text-white" data-testid={`reward-delete-${r.id}`}>
-                      <Trash2 className="w-3.5 h-3.5" strokeWidth={2.75} />
-                    </button>
-                  </div>
-                </div>
-                <h3 className="font-heading font-extrabold text-xl" data-testid={`reward-name-${r.id}`}>{r.name}</h3>
-                {r.description && <p className="text-sm text-[#5C5C68] mt-0.5 mb-3">{r.description}</p>}
-                <div className="flex items-center justify-between mt-auto pt-3">
-                  <span className="nb-badge-coin !text-base !px-3"><Coins className="w-4 h-4" strokeWidth={3} />{r.cost}</span>
-                  <span className="text-xs font-bold text-[#5C5C68]">Redeemed {r.times_redeemed || 0}x</span>
-                </div>
-                <button
-                  onClick={() => redeem(r.id)}
-                  disabled={!afford}
-                  className={`nb-btn w-full mt-4 ${afford ? "nb-btn-secondary" : "nb-btn-outline"}`}
-                  data-testid={`reward-redeem-${r.id}`}
-                >
-                  {afford ? <>Redeem <Gift className="w-4 h-4" strokeWidth={3} /></> : `Need ${r.cost - balance} more`}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <WalletBanner balance={balance} />
+      {renderContent()}
 
       <RewardForm
         open={panelOpen}
-        onClose={() => { setPanelOpen(false); setEditing(null); }}
+        onClose={closePanel}
         onSubmit={editing ? update : create}
         initial={editing}
       />

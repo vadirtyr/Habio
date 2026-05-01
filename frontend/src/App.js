@@ -13,6 +13,17 @@ import Tasks from "@/pages/Tasks";
 import Rewards from "@/pages/Rewards";
 import History from "@/pages/History";
 
+const TOAST_OPTIONS = {
+  style: {
+    border: "2px solid #1E1E24",
+    borderRadius: "12px",
+    boxShadow: "4px 4px 0 0 #1E1E24",
+    background: "white",
+    color: "#1E1E24",
+    fontWeight: 700,
+  },
+};
+
 function AuthGate({ children }) {
   const { user, loading } = useAuth();
   if (loading) return null;
@@ -33,19 +44,7 @@ function App() {
     <div className="App">
       <AuthProvider>
         <BrowserRouter>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                border: "2px solid #1E1E24",
-                borderRadius: "12px",
-                boxShadow: "4px 4px 0 0 #1E1E24",
-                background: "white",
-                color: "#1E1E24",
-                fontWeight: 700,
-              },
-            }}
-          />
+          <Toaster position="top-right" toastOptions={TOAST_OPTIONS} />
           <Routes>
             <Route path="/login" element={<AuthGate><Login /></AuthGate>} />
             <Route path="/register" element={<AuthGate><Register /></AuthGate>} />
