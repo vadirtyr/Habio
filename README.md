@@ -133,6 +133,37 @@ docker compose -f docker-compose.single.yml up --build -d
 open http://localhost:8080
 ```
 
+### Three ways to run Habio — pick one
+
+| # | Command | What it gives you | When to use |
+|---|---------|-------------------|-------------|
+| 1 | `docker run -d --name habio -p 8080:8080 … habio` | 1 container, named `habio`, on port 8080. You supply `MONGO_URL` (Atlas etc.) | Fastest — you already have a managed Mongo. |
+| 2 | `docker compose -f docker-compose.single.yml up -d` | 2 containers: `habio` + `habio-mongo` (local persisted DB) | Most convenient local/self-hosted run. **Recommended.** |
+| 3 | `docker compose up -d` | 3 containers: `habio-backend`, `habio-frontend`, `habio-mongo` (separate images) | Active development — iterate on one service at a time. |
+
+### Troubleshooting run issues
+
+**Port column empty in Docker Desktop / `curl` fails:**
+You probably ran `docker run habio` without `-p`. The `EXPOSE 8080` directive
+is documentation only — you **must** publish the port explicitly:
+
+```bash
+docker run -d --name habio -p 8080:8080 … habio
+```
+
+**Container has a random name (e.g. `fervent_allen`):**
+Pass `--name habio`, or use one of the compose files which set
+`container_name:` for you.
+
+**Container already exists, can't reuse the name:**
+
+```bash
+docker ps -a                 # list all containers (including stopped)
+docker rm -f <id-or-name>    # remove the old one
+```
+
+Then re-run with the correct flags.
+
 When deploying:
 - **Railway / Render / Fly** auto-detect the root `Dockerfile` and inject `$PORT`.
 - **Cloud Run** — `gcloud run deploy --source .` works out of the box.
