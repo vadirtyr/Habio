@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { celebrate } from "@/lib/confetti";
 import HabitCard from "@/components/HabitCard";
 import ItemFormPanel from "@/components/ItemFormPanel";
 import { Flame, Plus } from "lucide-react";
@@ -73,6 +74,7 @@ export default function Habits() {
     try {
       const { data } = await api.post(`/habits/${id}/complete`);
       updateBalance(data.new_balance);
+      celebrate(data.streak >= 7 ? "big" : "normal");
       toast.success(`+${data.coins_earned} coins! Streak: ${data.streak}`);
       load();
     } catch (e) { toast.error(e.response?.data?.detail || "Failed"); }

@@ -12,6 +12,7 @@ import Habits from "@/pages/Habits";
 import Tasks from "@/pages/Tasks";
 import Rewards from "@/pages/Rewards";
 import History from "@/pages/History";
+import Achievements from "@/pages/Achievements";
 
 const TOAST_OPTIONS = {
   style: {
@@ -52,6 +53,7 @@ function App() {
             <Route path="/habits" element={<Shell><Habits /></Shell>} />
             <Route path="/tasks" element={<Shell><Tasks /></Shell>} />
             <Route path="/rewards" element={<Shell><Rewards /></Shell>} />
+            <Route path="/achievements" element={<Shell><Achievements /></Shell>} />
             <Route path="/history" element={<Shell><History /></Shell>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { celebrate } from "@/lib/confetti";
 import DifficultyBadge from "@/components/DifficultyBadge";
 import { Coins, Flame, ListChecks, Gift, TrendingUp, Award, ArrowRight, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -182,6 +183,7 @@ export default function Dashboard() {
       const { data } = await api.post(`/habits/${id}/complete`);
       updateBalance(data.new_balance);
       flashCoin(data.coins_earned, id);
+      celebrate(data.streak >= 7 ? "big" : "normal");
       toast.success(`+${data.coins_earned} coins! Streak: ${data.streak}`);
       load();
     } catch (e) {
@@ -194,6 +196,7 @@ export default function Dashboard() {
       const { data } = await api.post(`/tasks/${id}/complete`);
       updateBalance(data.new_balance);
       flashCoin(data.coins_earned, id);
+      celebrate("normal");
       toast.success(`+${data.coins_earned} coins!`);
       load();
     } catch (e) {

@@ -1,5 +1,6 @@
 import React from "react";
 import DifficultyBadge from "@/components/DifficultyBadge";
+import HabitHeatmap from "@/components/HabitHeatmap";
 import { Coins, Flame, Pencil, Trash2, Calendar, Check } from "lucide-react";
 
 export default function HabitCard({ habit, onComplete, onEdit, onDelete }) {
@@ -57,6 +58,8 @@ export default function HabitCard({ habit, onComplete, onEdit, onDelete }) {
       >
         {buttonContent}
       </button>
+
+      <HabitHeatmap completions={habit.completions} testId={`habit-heatmap-${id}`} />
     </div>
   );
 }

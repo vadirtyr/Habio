@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { celebrateBig } from "@/lib/confetti";
 import RewardCard from "@/components/RewardCard";
 import { Coins, Gift, Plus, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
@@ -125,6 +126,7 @@ export default function Rewards() {
     try {
       const { data } = await api.post(`/rewards/${id}/redeem`);
       updateBalance(data.new_balance);
+      celebrateBig();
       toast.success(`Enjoy: ${data.redemption.reward_name}!`);
       load();
     } catch (e) { toast.error(e.response?.data?.detail || "Failed"); }

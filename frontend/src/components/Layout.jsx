@@ -1,13 +1,14 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Coins, LayoutDashboard, Flame, ListChecks, Gift, History, LogOut, Sparkles } from "lucide-react";
+import { Coins, LayoutDashboard, Flame, ListChecks, Gift, History, LogOut, Sparkles, Trophy } from "lucide-react";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/habits", label: "Habits", icon: Flame },
   { to: "/tasks", label: "Tasks", icon: ListChecks },
   { to: "/rewards", label: "Rewards", icon: Gift },
+  { to: "/achievements", label: "Trophies", icon: Trophy },
   { to: "/history", label: "History", icon: History },
 ];
 

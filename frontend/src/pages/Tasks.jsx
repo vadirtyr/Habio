@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { celebrate } from "@/lib/confetti";
 import TaskRow from "@/components/TaskRow";
 import ItemFormPanel from "@/components/ItemFormPanel";
 import { Plus } from "lucide-react";
@@ -94,6 +95,7 @@ export default function Tasks() {
     try {
       const { data } = await api.post(`/tasks/${id}/complete`);
       updateBalance(data.new_balance);
+      celebrate("normal");
       toast.success(`+${data.coins_earned} coins!`);
       load();
     } catch (e) { toast.error(e.response?.data?.detail || "Failed"); }

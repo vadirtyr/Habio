@@ -518,6 +518,64 @@ async def get_stats(user: dict = Depends(get_current_user)):
     }
 
 
+# ============== Achievements ==============
+ACHIEVEMENT_DEFS = [
+    {"id": "first-habit",     "name": "First Steps",       "description": "Create your first habit",       "icon": "Flame",      "color": "#EF476F", "target": 1,   "metric": "habits_count"},
+    {"id": "first-task",      "name": "On a Mission",      "description": "Create your first task",        "icon": "ListChecks", "color": "#118AB2", "target": 1,   "metric": "tasks_total"},
+    {"id": "tasks-10",        "name": "Task Slayer",       "description": "Complete 10 tasks",             "icon": "Award",      "color": "#06D6A0", "target": 10,  "metric": "tasks_done"},
+    {"id": "tasks-50",        "name": "Productivity Pro",  "description": "Complete 50 tasks",             "icon": "Trophy",     "color": "#FFD166", "target": 50,  "metric": "tasks_done"},
+    {"id": "streak-3",        "name": "Warming Up",        "description": "Reach a 3-day streak",          "icon": "Flame",      "color": "#FFD166", "target": 3,   "metric": "best_streak"},
+    {"id": "streak-7",        "name": "On Fire",           "description": "Reach a 7-day streak",          "icon": "Flame",      "color": "#EF476F", "target": 7,   "metric": "best_streak"},
+    {"id": "streak-30",       "name": "Unstoppable",       "description": "Reach a 30-day streak",         "icon": "Zap",        "color": "#EF476F", "target": 30,  "metric": "best_streak"},
+    {"id": "coins-100",       "name": "Pocket Change",     "description": "Earn 100 coins",                "icon": "Coins",      "color": "#FFD166", "target": 100, "metric": "total_earned"},
+    {"id": "coins-500",       "name": "Coin Collector",    "description": "Earn 500 coins",                "icon": "Coins",      "color": "#FFD166", "target": 500, "metric": "total_earned"},
+    {"id": "first-redemption","name": "Treat Yourself",    "description": "Redeem your first reward",      "icon": "Gift",       "color": "#EF476F", "target": 1,   "metric": "redemptions_count"},
+    {"id": "redemptions-10",  "name": "Big Spender",       "description": "Redeem 10 rewards",             "icon": "Gift",       "color": "#118AB2", "target": 10,  "metric": "redemptions_count"},
+]
+
+
+async def compute_user_metrics(uid: str) -> dict:
+    habits_count = await db.habits.count_documents({"user_id": uid})
+    tasks_total = await db.tasks.count_documents({"user_id": uid})
+    tasks_done = await db.tasks.count_documents({"user_id": uid, "completed": True})
+    redemptions_count = await db.redemptions.count_documents({"user_id": uid})
+    pipe = [
+        {"$match": {"user_id": uid, "type": "earn"}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}},
+    ]
+    earn_agg = await db.transactions.aggregate(pipe).to_list(1)
+    total_earned = earn_agg[0]["total"] if earn_agg else 0
+    habits = await db.habits.find({"user_id": uid}, {"_id": 0, "longest_streak": 1}).to_list(1000)
+    best_streak = max([h.get("longest_streak", 0) for h in habits], default=0)
+    return {
+        "habits_count": habits_count,
+        "tasks_total": tasks_total,
+        "tasks_done": tasks_done,
+        "redemptions_count": redemptions_count,
+        "total_earned": total_earned,
+        "best_streak": best_streak,
+    }
+
+
+@api_router.get("/achievements")
+async def list_achievements(user: dict = Depends(get_current_user)):
+    metrics = await compute_user_metrics(user["id"])
+    items = []
+    for a in ACHIEVEMENT_DEFS:
+        progress = int(metrics.get(a["metric"], 0))
+        target = int(a["target"])
+        earned = progress >= target
+        items.append({
+            **a,
+            "progress": min(progress, target),
+            "raw_progress": progress,
+            "earned": earned,
+            "percent": int(min(100, (progress / target) * 100)) if target else 0,
+        })
+    earned_count = sum(1 for x in items if x["earned"])
+    return {"items": items, "earned_count": earned_count, "total": len(items)}
+
+
 # --- Health ---
 @api_router.get("/")
 async def root():
