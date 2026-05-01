@@ -80,10 +80,14 @@ docker compose down -v             # stop AND wipe Mongo data
 The backend and frontend Dockerfiles each build standalone:
 
 ```bash
-# Backend only
+# Backend only — point MONGO_URL at any reachable Mongo.
+# Example: a Mongo container on the same Docker network.
+docker network create habio-net 2>/dev/null || true
+docker run -d --name habio-mongo --network habio-net -p 27017:27017 mongo:7
+
 docker build -t habio-backend ./backend
-docker run -p 8001:8001 \
-  -e MONGO_URL=mongodb://host.docker.internal:27017 \
+docker run -d --name habio-backend --network habio-net -p 8001:8001 \
+  -e MONGO_URL=mongodb://habio-mongo:27017 \
   -e DB_NAME=habio \
   -e JWT_SECRET=$(openssl rand -hex 32) \
   habio-backend
@@ -92,8 +96,13 @@ docker run -p 8001:8001 \
 docker build \
   --build-arg REACT_APP_BACKEND_URL=https://api.example.com \
   -t habio-frontend ./frontend
-docker run -p 3000:80 habio-frontend
+docker run -d --name habio-frontend -p 3000:80 habio-frontend
 ```
+
+> **Tip — talking to a Mongo on the host machine:** `host.docker.internal`
+> only resolves automatically on Docker Desktop (Mac/Windows). On **Linux**
+> add `--add-host=host.docker.internal:host-gateway` to the `docker run`
+> command so the hostname maps to your host's gateway IP.
 
 See **[DOCKER.md](./DOCKER.md)** for more details.
 
@@ -163,6 +172,27 @@ docker rm -f <id-or-name>    # remove the old one
 ```
 
 Then re-run with the correct flags.
+
+**`ServerSelectionTimeoutError: host.docker.internal:27017: Name or service not known`:**
+The backend can't reach your Mongo. On **Linux** (and sometimes in CI),
+`host.docker.internal` isn't resolvable by default. Two quick fixes:
+
+1. **Use a Mongo container on the same Docker network** (no host-networking needed):
+   ```bash
+   docker network create habio-net
+   docker run -d --name habio-mongo --network habio-net mongo:7
+   docker run -d --name habio --network habio-net -p 8080:8080 \
+     -e MONGO_URL=mongodb://habio-mongo:27017 \
+     -e JWT_SECRET=$(openssl rand -hex 32) \
+     habio
+   ```
+2. **Keep using `host.docker.internal`** but add the host-gateway mapping:
+   ```bash
+   docker run … --add-host=host.docker.internal:host-gateway …
+   ```
+
+Or easiest of all — use `docker-compose.single.yml`, which wires Mongo up
+for you on a shared network automatically.
 
 When deploying:
 - **Railway / Render / Fly** auto-detect the root `Dockerfile` and inject `$PORT`.
