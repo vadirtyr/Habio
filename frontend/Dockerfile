@@ -3,10 +3,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-
 COPY . .
+RUN yarn install --network-timeout 600000
 
 # Bake the backend URL into the build (CRA reads env at build time)
 ARG REACT_APP_BACKEND_URL=http://localhost:8001

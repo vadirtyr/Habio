@@ -11,10 +11,8 @@ FROM node:20-alpine AS frontend-builder
 
 WORKDIR /frontend
 
-COPY frontend/package.json frontend/yarn.lock ./
-RUN yarn install --frozen-lockfile
-
 COPY frontend/ ./
+RUN yarn install --network-timeout 600000
 
 # When deployed as a single image, frontend & backend share the same origin,
 # so REACT_APP_BACKEND_URL is the empty string (calls hit /api on the same host).
