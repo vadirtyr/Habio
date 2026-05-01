@@ -99,6 +99,37 @@ See **[DOCKER.md](./DOCKER.md)** for more details.
 
 ---
 
+## Single-image deploy (Railway / Render / Fly / Cloud Run)
+
+The repo also ships with a **root `Dockerfile`** that bundles everything
+into one container — perfect for platforms that pull a single image:
+
+- nginx serves the React build on `$PORT` (auto-detected)
+- nginx reverse-proxies `/api/*` to a local uvicorn worker on `:8001`
+- supervisord keeps both processes alive
+- Mongo is **not** included — point `MONGO_URL` at a managed instance (e.g. Atlas)
+
+```bash
+# Local test
+docker build -t habio .
+docker run -p 8080:8080 \
+  -e MONGO_URL="mongodb+srv://..." \
+  -e DB_NAME=habio \
+  -e JWT_SECRET=$(openssl rand -hex 32) \
+  -e ADMIN_EMAIL=you@example.com \
+  -e ADMIN_PASSWORD=strongpass \
+  habio
+
+open http://localhost:8080
+```
+
+When deploying:
+- **Railway / Render / Fly** auto-detect the root `Dockerfile` and inject `$PORT`.
+- **Cloud Run** — `gcloud run deploy --source .` works out of the box.
+- Set the same env vars (`MONGO_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`) in your platform's dashboard.
+
+---
+
 ## Local development (without Docker)
 
 ### Backend
